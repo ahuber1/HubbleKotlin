@@ -1,10 +1,12 @@
 package ahuber.kotlin.hubble.adt
 
 import ahuber.kotlin.hubble.utils.swap
-import java.util.*
+import java.util.Collections
 import kotlin.collections.ArrayList
 
-public class Buffer<T>(val capacity: Int) : MutableCollection<T> {
+fun <T> Buffer<T>.isFull() = size == capacity
+
+class Buffer<T>(val capacity: Int) : MutableCollection<T> {
     private val array: Array<T?>
     private val observers = Collections.synchronizedList(ArrayList<SizeObserver<Buffer<T>>>())
     private var startIndex = 0
@@ -34,7 +36,7 @@ public class Buffer<T>(val capacity: Int) : MutableCollection<T> {
     //region add/remove
     @Synchronized
     override fun add(element: T): Boolean {
-        if (isFull) {
+        if (isFull()) {
             return false
         }
 
@@ -84,14 +86,17 @@ public class Buffer<T>(val capacity: Int) : MutableCollection<T> {
     }
     //endregion
 
+    @Synchronized
     override fun clear() {
         startIndex = 0
         endIndex = 0
         setSize(0)
     }
 
+    @Synchronized
     override fun addAll(elements: Collection<T>) = addAll(elements, true)
 
+    @Synchronized
     fun addAll(elements: Collection<T>, failIfInsufficientSpace: Boolean = true) = makeBulkChanges {
         val newSize = size + elements.size
 
@@ -114,18 +119,20 @@ public class Buffer<T>(val capacity: Int) : MutableCollection<T> {
         return@makeBulkChanges collectionChanged
     }
 
+    @Synchronized
     override fun removeAll(elements: Collection<T>) = makeBulkChanges {
         elements.fold(false) { collectionChanged, item ->
             val itemRemoved = remove(item)
             return collectionChanged || itemRemoved
         }
     }
-
+    @Synchronized
     override fun retainAll(elements: Collection<T>): Boolean {
         val itemsToRemove = this.filter { !elements.contains(it) }
         return removeAll(itemsToRemove)
     }
 
+    @Synchronized
     fun extract(n: Int) = makeBulkChanges {
         @Suppress("NAME_SHADOWING") val n = n.coerceIn(0 until size)
         val copy = take(n)
@@ -145,10 +152,13 @@ public class Buffer<T>(val capacity: Int) : MutableCollection<T> {
             else -> all(this::contains)
         }
 
+    @Synchronized
     override fun isEmpty(): Boolean = size == 0
 
+    @Synchronized
     override fun iterator(): MutableIterator<T> = BufferIterator(IndexedIterator(this))
 
+    @Synchronized
     private fun invokeObservers() {
         if (suppressObservers) {
             return
@@ -158,10 +168,13 @@ public class Buffer<T>(val capacity: Int) : MutableCollection<T> {
     }
 
     //region increment/decrement/set size
+    @Synchronized
     private fun incrementSize() = setSize(size + 1)
 
+    @Synchronized
     private fun decrementSize() = setSize(size - 1)
 
+    @Synchronized
     private fun setSize(newValue: Int) {
         if (size == newValue) {
             return
@@ -230,5 +243,3 @@ public class Buffer<T>(val capacity: Int) : MutableCollection<T> {
         fun decrementIndex(index: Int, length: Int) = (index + length - 1) % length
     }
 }
-
-val <T> Buffer<T>.isFull get() = size == capacity
