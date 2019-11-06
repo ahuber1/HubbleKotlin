@@ -1,33 +1,8 @@
-//buildscript {
-//    ext.kotlin_version = "1.3.50"
-//
-//    repositories {
-//        mavenCentral()
-//    }
-//
-//    dependencies {
-//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-//    }
-//}
-//
-//allprojects {
-//    apply plugin: "kotlin"
-//
-//    compileKotlin {
-//        kotlinOptions {
-//            jvmTarget = "1.8"
-//            javaParameters = "true"
-//        }
-//    }
-//
-//    dependencies {
-//        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-//    }
-//}
-
 buildscript {
     ext {
         kotlin_version = "1.3.50"
+        kotlin_coroutines_version = "1.3.2"
+        moshi_kotlin_version = "1.9.1"
     }
 
     repositories {
