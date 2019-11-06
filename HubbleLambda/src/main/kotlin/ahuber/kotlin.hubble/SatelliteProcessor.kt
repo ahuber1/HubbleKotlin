@@ -1,9 +1,19 @@
 package ahuber.kotlin.hubble
 
+import ahuber.kotlin.hubble.aws.LocalizedS3ObjectId
+import ahuber.kotlin.hubble.aws.SparkJobConfiguration
+import ahuber.kotlin.hubble.aws.uploadJson
+import ahuber.kotlin.hubble.utils.adapter
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
+import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClientBuilder
+import com.amazonaws.services.s3.model.PutObjectResult
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.util.concurrent.Semaphore
 
-//
+
 class SatelliteProcessor(private val satelliteName: String,
                          private val threshold: Int,
                          private val emrRegion: Regions,
