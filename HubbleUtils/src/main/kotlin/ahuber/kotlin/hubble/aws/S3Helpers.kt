@@ -1,4 +1,4 @@
-package ahuber.kotlin.hubble.utils
+package ahuber.kotlin.hubble.aws
 
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3
@@ -73,13 +73,13 @@ fun AmazonS3.download(request: GetObjectRequest): S3Object = getObject(request)
 fun createS3Uri(bucketName: String, key: String) = "s3://$bucketName/$key"
 
 fun createHadoopLogFolderId(satelliteName: String) =
-    LocalizedS3ObjectId(Regions.US_EAST_1, "ahuber-hadoop-logs", "kotlin/$satelliteName/")
+        LocalizedS3ObjectId(Regions.US_EAST_1, "ahuber-hadoop-logs", "kotlin/$satelliteName/")
 
 fun createSparkJobConfigId(satelliteName: String) =
-    LocalizedS3ObjectId(Regions.US_EAST_1, "ahuber-spark-job-configs", "kotlin/$satelliteName.json")
+        LocalizedS3ObjectId(Regions.US_EAST_1, "ahuber-spark-job-configs", "kotlin/$satelliteName.json")
 
 fun crateSparkJobJarId(jarPath: String) =
-    LocalizedS3ObjectId(Regions.US_EAST_1, "danshi", jarPath)
+        LocalizedS3ObjectId(Regions.US_EAST_1, "danshi", jarPath)
 
 fun createImageId(satelliteName: String) =
-    LocalizedS3ObjectId(Regions.US_EAST_1, "ahuber-satellite-images", "kotlin/$satelliteName.jpg")
+        LocalizedS3ObjectId(Regions.US_EAST_1, "ahuber-satellite-images", "kotlin/$satelliteName.jpg")

@@ -1,0 +1,3 @@
+rootProject.name = 'hubblelambda'
+include ':HubbleUtils'
+project(':HubbleUtils').projectDir = file('../HubbleUtils')

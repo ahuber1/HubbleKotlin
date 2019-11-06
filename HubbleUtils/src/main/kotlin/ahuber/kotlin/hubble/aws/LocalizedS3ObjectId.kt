@@ -1,4 +1,4 @@
-package ahuber.kotlin.hubble.utils
+package ahuber.kotlin.hubble.aws
 
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3URI

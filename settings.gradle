@@ -1,0 +1,6 @@
+rootProject.name = 'hubblekotlin'
+include ':hubbleutils'
+project(':hubbleutils').projectDir = file('./HubbleUtils')
+
+//include ':hubblelambda'
+//project(':hubblelambda').projectDir = file('./HubbleLambda')
