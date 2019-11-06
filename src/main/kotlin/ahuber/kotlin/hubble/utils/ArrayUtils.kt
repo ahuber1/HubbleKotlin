@@ -1,6 +1,6 @@
 package ahuber.kotlin.hubble.utils
 
-val IntRange.numberOfValues get() = endInclusive - start + 1
+val IntRange.length get() = endInclusive - start + 1
 
 fun Array<*>.getSubArraySize(indexRange: IntRange) = calculateArraySize(indexRange, size)
 
@@ -12,7 +12,7 @@ fun calculateArraySize(indexRange: IntRange, arrayLength: Int): Int {
     return if (indexRange.first == 0 && indexRange.last == 0 && arrayLength == 0) {
         0
     } else {
-        indexRange.numberOfValues
+        indexRange.length
     }
 }
 
@@ -22,7 +22,7 @@ fun <T> Array<T>.swap(index1: Int, index2: Int) {
     this[index2] = temp
 }
 
-fun <T> combineArrays(vararg arrays: Array<T>): List<T> {
+fun <T> combine(vararg arrays: Array<T>): List<T> {
     val length = arrays.map { it.size }.sum()
     val combined = ArrayList<T>(length)
 

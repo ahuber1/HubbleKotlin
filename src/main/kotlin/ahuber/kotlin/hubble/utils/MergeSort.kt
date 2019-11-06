@@ -9,14 +9,13 @@ suspend fun <T: Comparable<T>> Array<T>.mergeSort(threshold: Int): Array<T> {
         "'threshold' must be less than or equal to the size of the array. (threshold = $threshold, array size = $size)"
     }
 
-    return this.mergeSort(this.indices, threshold)
+    return this.copyOf().mergeSort(this.indices, threshold)
 }
 
-inline infix fun <reified T: Comparable<T>> Array<T>.merge(array2: Array<T>): Array<T> {
-    val combined = combineArrays(this, array2).toTypedArray()
-    return combined.merge(combined.indices)
+inline infix fun <reified T: Comparable<T>> Array<T>.mergeWith(array2: Array<T>): Array<T> {
+    val combined = combine(this, array2).toTypedArray()
+    return combined.mergeWith(combined.indices, this.lastIndex)
 }
-
 
 private suspend fun <T: Comparable<T>> Array<T>.mergeSort(indexRange: IntRange, threshold: Int): Array<T> {
     val subArraySize = this.getSubArraySize(indexRange)
@@ -34,34 +33,35 @@ private suspend fun <T: Comparable<T>> Array<T>.mergeSort(indexRange: IntRange, 
     }
 
     joinAll(leftJob, rightJob)
-    return merge(indexRange)
+    return mergeWith(indexRange)
 }
 
-fun <T: Comparable<T>> Array<T>.merge(indexRange: IntRange): Array<T> {
-    val temp = this.copyOf()
-    var left = indexRange.first
-    var right = indexRange.middle + 1
-    val index = 0
+fun <T: Comparable<T>> Array<T>.mergeWith(indexRange: IntRange, middle: Int? = null): Array<T> {
+    val temp = ArrayList<T>(indexRange.length)
 
-    while (index < temp.size) {
-        temp[index] = when {
-            left == indexRange.middle + 1 -> {
-                left--
-                this[right]
+    var left = indexRange.first
+
+    @Suppress("NAME_SHADOWING")
+    val middle = middle ?: indexRange.middle
+
+    var right = middle + 1
+
+    while (temp.size < indexRange.length) {
+         val element = when {
+            left == middle + 1 -> {
+                this[right++]
             }
             right == indexRange.last + 1 -> {
-                right--
-                this[left]
+                this[left++]
             }
             this[left] < this[right] -> {
-                right--
-                this[left]
+                this[left++]
             }
             else -> {
-                left--
-                this[right]
+                this[right++]
             }
         }
+        temp.add(element)
     }
 
     temp.forEachIndexed { i, element -> this[i] = element }
