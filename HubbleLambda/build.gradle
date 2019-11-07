@@ -9,6 +9,7 @@ dependencies {
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_kotlin_version"
     implementation project(":HubbleUtils")
     compile group: 'com.amazonaws', name: 'aws-java-sdk-emr', version: '1.11.656'
+    compile group: 'com.amazonaws', name: 'aws-lambda-java-events', version: '2.2.7'
 }
 
 compileKotlin {

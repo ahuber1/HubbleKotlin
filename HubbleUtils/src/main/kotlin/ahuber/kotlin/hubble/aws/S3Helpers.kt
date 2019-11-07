@@ -6,9 +6,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.*
 import com.amazonaws.util.StringInputStream
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import java.io.*
 import javax.imageio.ImageIO
 
 val Regions.s3Client: AmazonS3
@@ -68,6 +66,17 @@ fun LocalizedS3ObjectId.download(client: AmazonS3? = null) = (client ?: region.s
 fun AmazonS3.download(bucketName: String, key: String) = download(GetObjectRequest(bucketName, key))
 
 fun AmazonS3.download(request: GetObjectRequest): S3Object = getObject(request)
+//endregion
+
+//region read
+
+val S3Object.stringContent: String? get() = when (objectContent) {
+    null -> null
+    else -> InputStreamReader(objectContent).use { inputStreamReader ->
+        BufferedReader(inputStreamReader).use { it.readText() }
+    }
+}
+
 //endregion
 
 fun createS3Uri(bucketName: String, key: String) = "s3://$bucketName/$key"

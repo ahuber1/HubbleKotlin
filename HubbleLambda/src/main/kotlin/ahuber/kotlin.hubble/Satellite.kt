@@ -2,8 +2,9 @@ package ahuber.kotlin.hubble
 
 import ahuber.kotlin.hubble.adt.Buffer
 import ahuber.kotlin.hubble.adt.SizeObserver
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
 import java.util.*
-import java.util.concurrent.Semaphore
 
 class Satellite(private val buffer: Buffer<Int>) : SizeObserver<Buffer<Int>>, Runnable {
     private val semaphore = Semaphore(1)
@@ -30,8 +31,10 @@ class Satellite(private val buffer: Buffer<Int>) : SizeObserver<Buffer<Int>>, Ru
                 // If we were not successful, wait until the size of the collection changes and try again.
                 // We wait by acquiring a semaphore a first time and then a second time. The semaphore is released
                 // in sizeChanged(IntBuffer), which enables the semaphore to be acquired that second time.
-                semaphore.acquire()
-                semaphore.acquire()
+                runBlocking {
+                    semaphore.acquire()
+                    semaphore.acquire()
+                }
 
                 // Now that we have the semaphore, release it so we "clean up after ourselves," and try again.
                 semaphore.release()
