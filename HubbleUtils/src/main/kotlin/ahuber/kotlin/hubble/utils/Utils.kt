@@ -1,12 +1,15 @@
 package ahuber.kotlin.hubble.utils
 
+import com.amazonaws.regions.Regions
 import com.amazonaws.services.lambda.runtime.Context
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 inline val IntRange.middle get() = this.first + this.length / 2
 
-val moshiKotlin get() = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+val moshiKotlin: Moshi get() = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+
+fun String.convertToRegion() = Regions.values().firstOrNull { it.name == this }
 
 fun getHubbleLogger(context: Context? = null): HubbleLogger = when (val logger = context?.logger) {
     null -> object: HubbleLogger {

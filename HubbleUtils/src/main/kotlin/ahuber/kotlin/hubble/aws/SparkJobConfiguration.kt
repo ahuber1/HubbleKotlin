@@ -3,7 +3,7 @@ package ahuber.kotlin.hubble.aws
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class SparkJobConfiguration(val name: String, val threshold: Int, val data: IntArray) {
+data class SparkJobConfiguration(val name: String, val threshold: Int, val data: Array<Int>) {
 
     override fun equals(other: Any?): Boolean {
         return when {

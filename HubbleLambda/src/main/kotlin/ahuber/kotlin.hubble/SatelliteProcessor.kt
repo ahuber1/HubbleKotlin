@@ -12,8 +12,6 @@ import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClientBuild
 import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult
 import com.amazonaws.services.s3.model.PutObjectResult
 import java.util.concurrent.Semaphore
-import ahuber.kotlin.hubble.utils.combine as combineArrays
-
 
 class SatelliteProcessor(private val satelliteName: String,
         private val threshold: Int,
@@ -40,7 +38,7 @@ class SatelliteProcessor(private val satelliteName: String,
     }
 
     override fun onReceived(data: Array<Int>) {
-        val configuration = SparkJobConfiguration(satelliteName, threshold, data.toIntArray())
+        val configuration = SparkJobConfiguration(satelliteName, threshold, data)
         uploadToAmazonS3(configuration, sparkJobConfigurationLocation)
         println("$configuration was successfully converted to JSON and uploaded to Amazon S3.")
         val result =
@@ -71,7 +69,7 @@ class SatelliteProcessor(private val satelliteName: String,
             val allArgs = run {
                 with(arrayOf("spark-submit", "--deploy-mode", "cluster", "--executor-memory", "1g", "--class",
                         sparkJobClass, sparkJobJarLocation.stringUri)) {
-                    combineArrays(this, sparkJobJarArgs)
+                    combine(this, sparkJobJarArgs)
                 }
             }
 
@@ -88,19 +86,23 @@ class SatelliteProcessor(private val satelliteName: String,
                         masterInstanceType = "m5.xlarge"
                         slaveInstanceType = "m5.xlarge"
                     }
-                    withApplications {
-                        add(application { name = "Spark" })
+                    applications {
+                        add {
+                            application { name = "Spark" }
+                        }
                     }
-                    withSteps {
+                    steps {
                         withDebuggingEnabled {
-                            add(stepConfig {
-                                name = "Process Data"
-                                actionOnFailure = TERMINATE_CLUSTER_ACTION
-                                hadoopJarStep = hadoopJarStep {
-                                    jar = "command-runner.jar"
-                                    setArgs(allArgs)
+                            add {
+                                stepConfig {
+                                    name = "Process Data"
+                                    actionOnFailure = TERMINATE_CLUSTER_ACTION
+                                    hadoopJarStep = hadoopJarStep {
+                                        jar = "command-runner.jar"
+                                        args { addAll(allArgs) }
+                                    }
                                 }
-                            })
+                            }
                         }
                     }
                 }

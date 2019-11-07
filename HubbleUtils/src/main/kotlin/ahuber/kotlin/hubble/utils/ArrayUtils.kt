@@ -5,10 +5,7 @@ val IntRange.length get() = endInclusive - start + 1
 fun Array<*>.getSubArraySize(indexRange: IntRange) = calculateArraySize(indexRange, size)
 
 fun calculateArraySize(indexRange: IntRange, arrayLength: Int): Int {
-    val argumentDescription: String by lazy {
-        "Arguments: [indexRange: $indexRange, arrayLength: $arrayLength]"
-    }
-    require(arrayLength >= 0) { "arrayLength < 0 ($argumentDescription)" }
+    require(arrayLength >= 0) { "arrayLength < 0 (Arguments: [indexRange: $indexRange, arrayLength: $arrayLength])" }
     return if (indexRange.first == 0 && indexRange.last == 0 && arrayLength == 0) {
         0
     } else {

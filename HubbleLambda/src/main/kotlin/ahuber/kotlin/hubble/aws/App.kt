@@ -199,7 +199,7 @@ class App : RequestHandler<S3Event, String> {
 
         private fun processS3Entity(app: App, bucket: String, key: String, hubbleLogger: HubbleLogger): String? {
             hubbleLogger.logLine("Downloading S3 object located in bucket '$bucket' and that has key '$key'")
-            val text = AmazonS3ClientBuilder.defaultClient().download(bucket, key).use { it.stringContent } ?: return null
+            val text = AmazonS3ClientBuilder.defaultClient().download(bucket, key).use { it.getText() } ?: return null
             hubbleLogger.logLine("JSON has been read: $text")
             val jsonAdapter = moshiKotlin.adapter<SatelliteConfiguration>()
             val configuration = jsonAdapter.fromJson(text) ?: return null

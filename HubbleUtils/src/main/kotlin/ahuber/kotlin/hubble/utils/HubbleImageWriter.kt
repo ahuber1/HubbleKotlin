@@ -29,8 +29,6 @@ fun ByteArray.writeGreyscaleImage(): BufferedImage {
     return image
 }
 
-fun Array<Int>.normalize() = this.toIntArray().normalize()
-
 fun IntArray.normalize(): ByteArray {
     val byteArray = ByteArray(size)
     for ((index, value) in this.withIndex()) {
