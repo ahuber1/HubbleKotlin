@@ -47,7 +47,6 @@ private fun parallelMergeSort(context: JavaSparkContext, jobConfiguration: Spark
         runBlocking {
             it.mergeSort(threshold)
         }
-    }.reduce { array1, array2 ->
-        array1 mergeWith array2
+    }.reduce { array1, array2 -> (array1 mergeWith array2).toTypedArray()
     }
 }
