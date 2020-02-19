@@ -9,7 +9,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClientBuilder
-import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult
+import com.amazonaws.services.elasticmapreduce.model.*
 import com.amazonaws.services.s3.model.PutObjectResult
 import java.util.concurrent.Semaphore
 
@@ -60,7 +60,7 @@ class SatelliteProcessor(private val satelliteName: String,
                 sparkJobJarArgs: Array<String>): RunJobFlowResult {
 
             val emr = with(ProfileCredentialsProvider("default").credentials) {
-                AmazonElasticMapReduceClientBuilder.standard().configure {
+                AmazonElasticMapReduceClientBuilder.standard().build {
                     this.credentials = AWSStaticCredentialsProvider(this@with)
                     this.correspondingRegion = emrRegion
                 }
@@ -69,38 +69,36 @@ class SatelliteProcessor(private val satelliteName: String,
             val allArgs = run {
                 with(arrayOf("spark-submit", "--deploy-mode", "cluster", "--executor-memory", "1g", "--class",
                         sparkJobClass, sparkJobJarLocation.stringUri)) {
-                    combine(this, sparkJobJarArgs)
+                    combineArrays(this, sparkJobJarArgs)
                 }
             }
 
             return emr.runJobFlow {
-                runJobFlowRequest {
-                    name = "Spark Cluster"
-                    releaseLabel = "emr-5.27.0"
-                    logUri = logLocationId.stringUri
-                    serviceRole = "EMR_DefaultRole"
-                    jobFlowRole = "EMR_EC2_DefaultRole"
-                    instances = jobFlowInstancesConfig {
-                        instanceCount = 3
-                        keepJobFlowAliveWhenNoSteps = false
-                        masterInstanceType = "m5.xlarge"
-                        slaveInstanceType = "m5.xlarge"
+                name = "Spark Cluster"
+                releaseLabel = "emr-5.27.0"
+                logUri = logLocationId.stringUri
+                serviceRole = "EMR_DefaultRole"
+                jobFlowRole = "EMR_EC2_DefaultRole"
+                instances {
+                    instanceCount = 3
+                    keepJobFlowAliveWhenNoSteps = false
+                    masterInstanceType = "m5.xlarge"
+                    slaveInstanceType = "m5.xlarge"
+                }
+                applications {
+                    yieldElement {
+                        Application().configure { name = "Spark" }
                     }
-                    applications {
-                        add {
-                            application { name = "Spark" }
-                        }
-                    }
-                    steps {
-                        withDebuggingEnabled {
-                            add {
-                                stepConfig {
-                                    name = "Process Data"
-                                    actionOnFailure = TERMINATE_CLUSTER_ACTION
-                                    hadoopJarStep = hadoopJarStep {
-                                        jar = "command-runner.jar"
-                                        args { addAll(allArgs) }
-                                    }
+                }
+                steps {
+                    withDebuggingEnabled {
+                        StepConfig().configure {
+                            name = "Process Data"
+                            actionOnFailure = TERMINATE_CLUSTER_ACTION
+                            hadoopJarStep = HadoopJarStepConfig().configure {
+                                jar = "command-runner.jar"
+                                args {
+                                    yieldAll(allArgs)
                                 }
                             }
                         }

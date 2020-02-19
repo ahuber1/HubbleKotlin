@@ -28,7 +28,7 @@ private suspend fun <T : Comparable<T>> Array<T>.mergeSort(threshold: Int, compa
 }
 
 private fun <T : Comparable<T>> Array<T>.merge(array2: Array<T>, comparator: Comparator<T>): List<T> {
-    val combined = combine(this, array2).toMutableList()
+    val combined = combineArrays(this, array2).toMutableList()
     return combined.merge(combined.indices, comparator, this.lastIndex)
 }
 

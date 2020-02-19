@@ -19,7 +19,7 @@ fun <T> Array<T>.swap(index1: Int, index2: Int) {
     this[index2] = temp
 }
 
-fun <T> combine(vararg arrays: Array<T>): List<T> {
+fun <T> combineArrays(vararg arrays: Array<T>): List<T> {
     val length = arrays.map { it.size }.sum()
     val combined = ArrayList<T>(length)
 

@@ -10,7 +10,7 @@ inline val IntRange.middle get() = this.first + this.length / 2
 
 val moshiKotlin: Moshi get() = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-
+inline fun <T> T.configure(block: T.() -> Unit) = apply(block)
 
 fun String.convertToRegion() = Regions.values().firstOrNull { it.name == this }
 
